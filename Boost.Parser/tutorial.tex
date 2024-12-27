@@ -5,7 +5,7 @@
 
 \emph{语义动作} 是与解析器相关联的任意逻辑片段，仅在解析器匹配时执行。
 
-简单的解析器可以组合形成更复杂的解析器。给定一些组合操作 \texttt{C}，以及解析器 \texttt{P0}、\texttt{P1}、...、\texttt{PN}，\texttt{C(P0, P1, ... PN)} 创建一个新的解析器 \texttt{Q}。这会创建一个 \emph{解析树}。 \texttt{Q} 是 \texttt{P1} 的父节点，\texttt{P2} 是 \texttt{Q} 的子节点，等等。解析器按照这种拓扑结构自上而下地应用。当你使用 \texttt{Q} 解析字符串时，它将使用 \texttt{P0}、\texttt{P1} 等来完成实际工作。如果 \texttt{P3} 正在解析输入，这意味着 \texttt{Q} 也在解析，因为 \texttt{Q} 的解析方式是通过派遣其子节点来完成部分或全部工作。在解析的任何时刻，只有一个没有子节点的解析器正在解析输入；所有其他正在使用的解析器都是解析树中的祖先节点。
+简单的解析器可以组合形成更复杂的解析器。给定一些组合操作 \ci{C}，以及解析器 \texttt{P0}、\texttt{P1}、...、\texttt{PN}，\texttt{C(P0, P1, ... PN)} 创建一个新的解析器 \texttt{Q}。这会创建一个 \emph{解析树}。 \texttt{Q} 是 \texttt{P1} 的父节点，\texttt{P2} 是 \texttt{Q} 的子节点，等等。解析器按照这种拓扑结构自上而下地应用。当你使用 \texttt{Q} 解析字符串时，它将使用 \texttt{P0}、\texttt{P1} 等来完成实际工作。如果 \texttt{P3} 正在解析输入，这意味着 \texttt{Q} 也在解析，因为 \texttt{Q} 的解析方式是通过派遣其子节点来完成部分或全部工作。在解析的任何时刻，只有一个没有子节点的解析器正在解析输入；所有其他正在使用的解析器都是解析树中的祖先节点。
 
 \emph{子解析器} 是另一个解析器的子节点的解析器。
 
@@ -23,9 +23,9 @@
 
 其中一个是 \emph{序列解析器}；你会看到它使用 \texttt{operator>>} 创建，如 \texttt{p1 >> p2 >> p3}。序列解析器尝试按顺序将其所有子解析器匹配到输入；如果所有子解析器都匹配，则匹配输入。
 
-另一个是 \emph{选择解析器}；你会看到它使用 \texttt{operator\textbar{}} 创建，如 \texttt{p1 \textbar{} p2 \textbar{} p3}。选择解析器尝试按顺序将其所有子解析器匹配到输入；它在最多匹配一个子解析器后停止。如果其中一个子解析器匹配，则匹配输入。
+另一个是 \emph{选择解析器}；你会看到它使用 \texttt{operator|} 创建，如 \texttt{p1 | p2 | p3}。选择解析器尝试按顺序将其所有子解析器匹配到输入；它在最多匹配一个子解析器后停止。如果其中一个子解析器匹配，则匹配输入。
 
-最后是 \emph{排列解析器}；它使用 \texttt{operator\textbar{}\textbar{}} 创建，如 \texttt{p1 \textbar{}\textbar{} p2 \textbar{}\textbar{} p3}。排列解析器尝试以任意顺序将其所有子解析器匹配到输入。因此，解析器 \texttt{p1 \textbar{}\textbar{} p2 \textbar{}\textbar{} p3} 等价于 \texttt{(p1 >> p2 >> p3) \textbar{} (p1 >> p3 >> p2) \textbar{} (p2 >> p1 >> p3) \textbar{} (p2 >> p3 >> p1) \textbar{} (p3 >> p1 >> p2) \textbar{} (p3 >> p2 >> p1)}。希望它的简洁性是不言自明的。如果所有子解析器都匹配，则匹配输入，无论它们匹配的顺序如何。
+最后是 \emph{排列解析器}；它使用 \texttt{operator||} 创建，如 \texttt{p1 || p2 || p3}。排列解析器尝试以任意顺序将其所有子解析器匹配到输入。因此，解析器 \texttt{p1 || p2 || p3} 等价于 \texttt{(p1 >> p2 >> p3) | (p1 >> p3 >> p2) | (p2 >> p1 >> p3) | (p2 >> p3 >> p1) | (p3 >> p1 >> p2) | (p3 >> p2 >> p1)}。希望它的简洁性是不言自明的。如果所有子解析器都匹配，则匹配输入，无论它们匹配的顺序如何。
 
 Boost.Parser 的解析器每个都有一个 \emph{属性} 与之关联，或者明确没有属性。属性是解析器在匹配输入时生成的值。例如，解析器 \texttt{double\_} 在匹配输入时生成一个 \texttt{double}。 \emph{\texttt{ATTR}}\texttt{()} 是一个概念上的宏，它扩展为传递给它的解析器的属性类型；\emph{\texttt{ATTR}}\texttt{(double\_)} 是 \texttt{double}。这类似于 \texttt{attribute} 类型特征。
 
@@ -82,7 +82,7 @@ Boost.Parser 的 \texttt{double} 解析器是 \texttt{double\_}。所以，要�
 boost::parser::double_ >> boost::parser::double_
 \end{code}
 
-这个表达式中的 \texttt{operator>>} 是序列操作符；可以将其理解为“后跟”。如果我们将序列操作符与 Kleene 星结合起来，我们可以通过编写以下代码来获得我们想要的解析器：
+这个表达式中的 \texttt{operator>>} 是序列操作符；可以将其理解为“后跟”。如果我们将序列操作符与 \ci{Kleene *}结合起来，我们可以通过编写以下代码来获得我们想要的解析器：
 
 \begin{code}
 boost::parser::double_ >> *(',' >> boost::parser::double_)
@@ -838,7 +838,7 @@ else
     std::cout << "Parse failure.\n";
 \end{code}
 
-Here, we use the parser \texttt{string\_uint\_uint}, which produces a \texttt{boost::parser::tuple<std::string, unsigned int, unsigned int>} attribute. When we try to parse that into an out-param \texttt{std::string} attribute, it just works. This is because \texttt{std::string} has a constructor that takes a \texttt{std::string}, an offset, and a length. Here's the other parse:
+这里，我们使用解析器 \texttt{string\_uint\_uint}，它生成一个 \texttt{boost::parser::tuple<std::string, unsigned int, unsigned int>} 属性。当我们尝试将其解析为一个 out-param \texttt{std::string} 属性时，它就能正常工作。这是因为 \texttt{std::string} 有一个构造函数，它接受一个 \texttt{std::string}、一个偏移量和一个长度。以下是另一个解析：
 
 \begin{code}
 constexpr auto uint_string = bp::uint_ >> +bp::char_;
@@ -853,15 +853,15 @@ if (parse(input, uint_string, bp::ws, vector_from_parse)) {
 }
 \end{code}
 
-Now we have the parser \texttt{uint\_string}, which produces \texttt{boost::parser::tuple<unsigned int, std::string>} attribute --- the two \texttt{char}s at the end combine into a \texttt{std::string}. Those two values can be used to construct a \texttt{std::vector<std::string>}, via the count, \texttt{T} constructor.
+现在我们有了解析器 \texttt{uint\_string}，它生成 \texttt{boost::parser::tuple<unsigned int, std::string>} 属性——结尾的两个 \texttt{char} 组合成一个 \texttt{std::string}。这两个值可以通过计数 \texttt{T} 构造函数来构造一个 \texttt{std::vector<std::string>}。
 
-Just like with using aggregates in place of tuples, non-aggregate \texttt{class} types can be substituted for tuples in most places. That includes using a non-aggregate \texttt{class} type as the attribute type of a \texttt{rule}.
+就像在元组中使用聚合一样，非聚合 \texttt{class} 类型可以在大多数地方替代元组。这包括使用非聚合 \texttt{class} 类型作为 \texttt{rule} 的属性类型。
 
-However, while compatible tuples can be substituted for aggregates, you \textbf{can't} substitute a tuple for some \texttt{class} type \texttt{T} just because the tuple could have been used to construct \texttt{T}. Think of trying to invert the substitution in the second parse above. Converting a \texttt{std::vector<std::string>} into a \texttt{boost::parser::tuple<unsigned int, std::string>} makes no sense.
+然而，虽然兼容的元组可以替代聚合，但你\textbf{不能}仅仅因为元组可以用来构造某个 \texttt{class} 类型 \texttt{T} 就替代它。想象一下试图在上面的第二个解析中反转替代。将一个 \texttt{std::vector<std::string>} 转换为 \texttt{boost::parser::tuple<unsigned int, std::string>} 是没有意义的。
 
-\subsection{Alternative Parsers}
+\subsection{替代解析器}
 
-Frequently, you need to parse something that might have one of several forms. \texttt{operator\textbar{}} is overloaded to form alternative parsers. For example:
+通常，你需要解析可能有多种形式的内容。重载的 \texttt{operator|} 用于形成替代解析器。例如：
 
 \begin{code}
 namespace bp = boost::parser;
@@ -882,7 +882,7 @@ namespace bp = boost::parser;
 auto const parser_3 = bp::eps | bp::int_; // Does not do what you think.
 \end{code}
 
-The reason is that alternative parsers try each of their subparsers, one at a time, and stop on the first one that matches. \emph{Epsilon} matches anything, since it is zero length and consumes no input. It even matches the end of input. This means that \texttt{parser\_3} is equivalent to \texttt{eps} by itself.
+原因是替代解析器会依次尝试它们的每个子解析器，并在第一个匹配的子解析器上停止。 \emph{Epsilon} 匹配任何内容，因为它是零长度且不消耗任何输入。它甚至匹配输入的结尾。这意味着 \texttt{parser\_3} 本身就相当于 \texttt{eps}。
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
@@ -893,7 +893,7 @@ The reason is that alternative parsers try each of their subparsers, one at a ti
 \endlastfoot
 \begin{minipage}[t]{\linewidth}\raggedright
 \end{minipage} & Note \\
-For this reason, writing \texttt{eps \textbar{} p} for any parser p is considered a bug. Debug builds will assert when \texttt{eps \textbar{} p} is encountered. & \\
+For this reason, writing \texttt{eps | p} for any parser p is considered a bug. Debug builds will assert when \texttt{eps | p} is encountered. & \\
 \end{longtable}
 
 \begin{longtable}[]{@{}
@@ -905,14 +905,14 @@ For this reason, writing \texttt{eps \textbar{} p} for any parser p is considere
 \endlastfoot
 \begin{minipage}[t]{\linewidth}\raggedright
 \end{minipage} & Warning \\
-This kind of error is very common when \texttt{eps} is involved, and also very easy to detect. However, it is possible to write \texttt{P1 >> P2}, where \texttt{P1} is a prefix of \texttt{P2}, such as \texttt{int\_ \textbar{} int >> int\_}, or \texttt{repeat(4){[}hex\_digit{]} \textbar{} repeat(8){[}hex\_digit{]}}. This is almost certainly an error, but is impossible to detect in the general case --- remember that \texttt{rules} can be separately compiled, and consider a pair of rules whose associated \texttt{\_def} parsers are \texttt{int\_} and \texttt{int\_ >> int\_}, respectively. & \\
+这种错误在涉及 \texttt{eps} 时非常常见，而且也很容易检测到。然而，有可能写出 \texttt{P1 >> P2}，其中 \texttt{P1} 是 \texttt{P2} 的前缀，例如 \texttt{int\_ | int >> int\_}，或者 \texttt{repeat(4){[}hex\_digit{]} | repeat(8){[}hex\_digit{]}}。这几乎肯定是一个错误，但在一般情况下是不可能检测到的——请记住，\texttt{rules} 可以单独编译，并且考虑一对规则，其关联的 \texttt{\_def} 解析器分别是 \texttt{int\_} 和 \texttt{int\_ >> int\_}。 & \\
 \end{longtable}
 
-\subsection{Parsing Quoted Strings}
+\subsection{解析带引号的字符串}
 
-It is very common to need to parse quoted strings. Quoted strings are slightly tricky, though, when using a skipper (and you should be using a skipper 99\% of the time). You don't want to allow arbitrary whitespace in the middle of your strings, and you also don't want to remove all whitespace from your strings. Both of these things will happen with the typical skipper, \texttt{ws}.
+解析带引号的字符串是非常常见的需求。然而，当使用跳过器时（而且你应该在99%的情况下使用跳过器），解析带引号的字符串会稍微有些棘手。你不希望在字符串中间允许任意的空白字符，也不希望从字符串中移除所有的空白字符。这两种情况都会在使用典型的跳过器 \texttt{ws} 时发生。
 
-So, here is how most people would write a quoted string parser:
+所以，这里是大多数人编写带引号字符串解析器的方法：
 
 \begin{code}
 namespace bp = boost::parser;
@@ -1025,7 +1025,7 @@ Compatibility means that the default attribute is assignable to the out-param in
 
 Some parsers also have additional state that is required to perform a match. For instance, \texttt{char\_} parsers can be parameterized with a single code point to match; the exact value of that code point is stored in the parser object.
 
-No parser has direct support for all the operations defined on parsers (\texttt{operator\textbar{}}, \texttt{operator>>}, etc.). Instead, there is a template called \texttt{parser\_interface} that supports all of these operations. \texttt{parser\_interface} wraps each parser, storing it as a data member, adapting it for general use. You should only ever see \texttt{parser\_interface} in the debugger, or possibly in some of the reference documentation. You should never have to write it in your own code.
+No parser has direct support for all the operations defined on parsers (\texttt{operator|}, \texttt{operator>>}, etc.). Instead, there is a template called \texttt{parser\_interface} that supports all of these operations. \texttt{parser\_interface} wraps each parser, storing it as a data member, adapting it for general use. You should only ever see \texttt{parser\_interface} in the debugger, or possibly in some of the reference documentation. You should never have to write it in your own code.
 
 \subsection{Backtracking}
 
@@ -1472,7 +1472,7 @@ Parser & Semantics & Attribute Type & Notes \\
 \texttt{ws} & Matches a single whitespace code point (see note), according to the Unicode White\_Space property. & None. & For more info, see the Unicode properties. \texttt{ws} may consume one code point or two. It only consumes two code points when it matches \texttt{"\textbackslash{}r\textbackslash{}n"}. \\
 \texttt{eol} & Matches a single newline (see note), following the "hard" line breaks in the Unicode line breaking algorithm. & None. & For more info, see the Unicode Line Breaking Algorithm. \texttt{eol} may consume one code point or two. It only consumes two code points when it matches \texttt{"\textbackslash{}r\textbackslash{}n"}. \\
 \texttt{eoi} & Matches only at the end of input, and consumes no input. & None. & \\
-\texttt{attr}\texttt{(arg0)} & Always matches, and consumes no input. Generates the attribute \emph{\texttt{RESOLVE}}\texttt{(arg0)}. & \texttt{decltype(}\emph{\texttt{RESOLVE}}\texttt{(arg0))}. & An important use case for \texttt{attribute} is to provide a default attribute value as a trailing alternative. For instance, an \textbf{optional} comma-delmited list is: \texttt{int\_ \% ',' \textbar{} attr(std::vector<int>)}. Without the "\texttt{\textbar{} attr(...)}", at least one \texttt{int\_} match would be required. \\
+\texttt{attr}\texttt{(arg0)} & Always matches, and consumes no input. Generates the attribute \emph{\texttt{RESOLVE}}\texttt{(arg0)}. & \texttt{decltype(}\emph{\texttt{RESOLVE}}\texttt{(arg0))}. & An important use case for \texttt{attribute} is to provide a default attribute value as a trailing alternative. For instance, an \textbf{optional} comma-delmited list is: \texttt{int\_ \% ',' | attr(std::vector<int>)}. Without the "\texttt{| attr(...)}", at least one \texttt{int\_} match would be required. \\
 \texttt{char\_} & Matches any single code point. & The code point type in Unicode parsing, or \texttt{char} in non-Unicode parsing. See Attribute Generation. & \\
 \texttt{char\_(arg0)} & Matches exactly the code point \emph{\texttt{RESOLVE}}\texttt{(arg0)}. & The code point type in Unicode parsing, or \texttt{char} in non-Unicode parsing. See Attribute Generation. & \\
 \texttt{char\_(arg0, arg1)} & Matches the next code point \texttt{n} in the input, if \emph{\texttt{RESOLVE}}\texttt{(arg0) <= n \&\& n <= }\emph{\texttt{RESOLVE}}\texttt{(arg1)}. & The code point type in Unicode parsing, or \texttt{char} in non-Unicode parsing. See Attribute Generation. & \\
@@ -1695,7 +1695,7 @@ These directives influence the generation of attributes. See Attribute Generatio
 
 \subsection{Combining Operations}
 
-Certain overloaded operators are defined for all parsers in Boost.Parser. We've already seen some of them used in this tutorial, especially \texttt{operator>>}, \texttt{operator\textbar{}}, and \texttt{operator\textbar{}\textbar{}}, which are used to form sequence parsers, alternative parsers, and permutation parsers, respectively.
+Certain overloaded operators are defined for all parsers in Boost.Parser. We've already seen some of them used in this tutorial, especially \texttt{operator>>}, \texttt{operator|}, and \texttt{operator||}, which are used to form sequence parsers, alternative parsers, and permutation parsers, respectively.
 
 Here are all the operator overloaded for parsers. In the tables below:
 
@@ -1735,17 +1735,17 @@ Expression & Semantics & Attribute Type & Notes \\
 \texttt{\&p} & Matches iff \texttt{p} matches; consumes no input. & None. & \\
 \texttt{*p} & Parses using \texttt{p} repeatedly until \texttt{p} no longer matches; always matches. & \texttt{std::string} if \emph{\texttt{ATTR}}\texttt{(p)} is \texttt{char} or \texttt{char32\_t}, otherwise \texttt{std::vector<}\emph{\texttt{ATTR}}\texttt{(p)>} & Matching \texttt{eps} an unlimited number of times creates an infinite loop, which is undefined behavior in C++. Boost.Parser will assert in debug mode when it encounters \texttt{*eps} (this applies to unconditional \texttt{eps} only). \\
 \texttt{+p} & Parses using \texttt{p} repeatedly until \texttt{p} no longer matches; matches iff \texttt{p} matches at least once. & \texttt{std::string} if \emph{\texttt{ATTR}}\texttt{(p)} is \texttt{char} or \texttt{char32\_t}, otherwise \texttt{std::vector<}\emph{\texttt{ATTR}}\texttt{(p)>} & Matching \texttt{eps} an unlimited number of times creates an infinite loop, which is undefined behavior in C++. Boost.Parser will assert in debug mode when it encounters \texttt{+eps} (this applies to unconditional \texttt{eps} only). \\
-\texttt{-p} & Equivalent to \texttt{p \textbar{} eps}. & \texttt{std::optional<}\emph{\texttt{ATTR}}\texttt{(p)>} & \\
+\texttt{-p} & Equivalent to \texttt{p | eps}. & \texttt{std::optional<}\emph{\texttt{ATTR}}\texttt{(p)>} & \\
 \texttt{p1 >> p2} & Matches iff \texttt{p1} matches and then \texttt{p2} matches. & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} (See note.) & \texttt{>>} is associative; \texttt{p1 >> p2 >> p3}, \texttt{(p1 >> p2) >> p3}, and \texttt{p1 >> (p2 >> p3)} are all equivalent. This attribute type only applies to the case where \texttt{p1} and \texttt{p2} both generate attributes; see Attribute Generation for the full rules. \\
 \texttt{p >> c} & Equivalent to \texttt{p >> lit(c)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
 \texttt{p >> r} & Equivalent to \texttt{p >> lit(r)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
 \texttt{p1 > p2} & Matches iff \texttt{p1} matches and then \texttt{p2} matches. No back-tracking is allowed after \texttt{p1} matches; if \texttt{p1} matches but then \texttt{p2} does not, the top-level parse fails. & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} (See note.) & \texttt{>} is associative; \texttt{p1 > p2 > p3}, \texttt{(p1 > p2) > p3}, and \texttt{p1 > (p2 > p3)} are all equivalent. This attribute type only applies to the case where \texttt{p1} and \texttt{p2} both generate attributes; see Attribute Generation for the full rules. \\
 \texttt{p > c} & Equivalent to \texttt{p > lit(c)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
 \texttt{p > r} & Equivalent to \texttt{p > lit(r)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
-\texttt{p1 \textbar{} p2} & Matches iff either \texttt{p1} matches or \texttt{p2} matches. & \texttt{std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} (See note.) & \texttt{\textbar{}} is associative; \texttt{p1 \textbar{} p2 \textbar{} p3}, \texttt{(p1 \textbar{} p2) \textbar{} p3}, and \texttt{p1 \textbar{} (p2 \textbar{} p3)} are all equivalent. This attribute type only applies to the case where \texttt{p1} and \texttt{p2} both generate attributes, and where the attribute types are different; see Attribute Generation for the full rules. \\
-\texttt{p \textbar{} c} & Equivalent to \texttt{p \textbar{} lit(c)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
-\texttt{p \textbar{} r} & Equivalent to \texttt{p \textbar{} lit(r)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
-\texttt{p1 \textbar{}\textbar{} p2} & Matches iff \texttt{p1} matches and \texttt{p2} matches, regardless of the order they match in. & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} & \texttt{\textbar{}\textbar{}} is associative; \texttt{p1 \textbar{}\textbar{} p2 \textbar{}\textbar{} p3}, \texttt{(p1 \textbar{}\textbar{} p2) \textbar{}\textbar{} p3}, and \texttt{p1 \textbar{}\textbar{} (p2 \textbar{}\textbar{} p3)} are all equivalent. It is an error to include a \texttt{eps} (conditional or non-conditional) in an \texttt{operator\textbar{}\textbar{}} expression. Though the parsers are matched in any order, the attribute elements are always in the order written in the \texttt{operator\textbar{}\textbar{}} expression. \\
+\texttt{p1 | p2} & Matches iff either \texttt{p1} matches or \texttt{p2} matches. & \texttt{std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} (See note.) & \texttt{|} is associative; \texttt{p1 | p2 | p3}, \texttt{(p1 | p2) | p3}, and \texttt{p1 | (p2 | p3)} are all equivalent. This attribute type only applies to the case where \texttt{p1} and \texttt{p2} both generate attributes, and where the attribute types are different; see Attribute Generation for the full rules. \\
+\texttt{p | c} & Equivalent to \texttt{p | lit(c)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
+\texttt{p | r} & Equivalent to \texttt{p | lit(r)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
+\texttt{p1 || p2} & Matches iff \texttt{p1} matches and \texttt{p2} matches, regardless of the order they match in. & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} & \texttt{||} is associative; \texttt{p1 || p2 || p3}, \texttt{(p1 || p2) || p3}, and \texttt{p1 || (p2 || p3)} are all equivalent. It is an error to include a \texttt{eps} (conditional or non-conditional) in an \texttt{operator||} expression. Though the parsers are matched in any order, the attribute elements are always in the order written in the \texttt{operator||} expression. \\
 \texttt{p1 - p2} & Equivalent to \texttt{!p2 >> p1}. & \emph{\texttt{ATTR}}\texttt{(p1)} & \\
 \texttt{p - c} & Equivalent to \texttt{p - lit(c)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
 \texttt{p - r} & Equivalent to \texttt{p - lit(r)}. & \emph{\texttt{ATTR}}\texttt{(p)} & \\
@@ -1773,7 +1773,7 @@ There are a couple of special rules not captured in the table above:
 
 First, the zero-or-more and one-or-more repetitions (\texttt{operator*()} and \texttt{operator+()}, respectively) may collapse when combined. For any parser \texttt{p}, \texttt{+(+p)} collapses to \texttt{+p}; \texttt{**p}, \texttt{*+p}, and \texttt{+*p} each collapse to just \texttt{*p}.
 
-Second, using \texttt{eps} in an alternative parser as any alternative \textbf{except} the last one is a common source of errors; Boost.Parser disallows it. This is true because, for any parser \texttt{p}, \texttt{eps \textbar{} p} is equivalent to \texttt{eps}, since \texttt{eps} always matches. This is not true for \texttt{eps} parameterized with a condition. For any condition \texttt{cond}, \texttt{eps(cond)} is allowed to appear anywhere within an alternative parser.
+Second, using \texttt{eps} in an alternative parser as any alternative \textbf{except} the last one is a common source of errors; Boost.Parser disallows it. This is true because, for any parser \texttt{p}, \texttt{eps | p} is equivalent to \texttt{eps}, since \texttt{eps} always matches. This is not true for \texttt{eps} parameterized with a condition. For any condition \texttt{cond}, \texttt{eps(cond)} is allowed to appear anywhere within an alternative parser.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
@@ -1938,10 +1938,10 @@ Parser & Attribute Type \\
 \texttt{p1 > p2 >> p3} & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2), }\emph{\texttt{ATTR}}\texttt{(p3)>} \\
 \texttt{p1 >> p2 > p3} & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2), }\emph{\texttt{ATTR}}\texttt{(p3)>} \\
 \texttt{p1 > p2 > p3} & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2), }\emph{\texttt{ATTR}}\texttt{(p3)>} \\
-\texttt{p1 \textbar{} p2} & \texttt{std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} \\
-\texttt{p1 \textbar{} p2 \textbar{} p3} & \texttt{std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2), }\emph{\texttt{ATTR}}\texttt{(p3)>} \\
-\texttt{p1 \textbar{}\textbar{} p2} & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} \\
-\texttt{p1 \textbar{}\textbar{} p2 \textbar{}\textbar{} p3} & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2), }\emph{\texttt{ATTR}}\texttt{(p3)>} \\
+\texttt{p1 | p2} & \texttt{std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} \\
+\texttt{p1 | p2 | p3} & \texttt{std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2), }\emph{\texttt{ATTR}}\texttt{(p3)>} \\
+\texttt{p1 || p2} & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} \\
+\texttt{p1 || p2 || p3} & \texttt{boost::parser::tuple<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2), }\emph{\texttt{ATTR}}\texttt{(p3)>} \\
 \texttt{p1 \% p2} & \texttt{std::string} if \emph{\texttt{ATTR}}\texttt{(p)} is \texttt{char} or \texttt{char32\_t}, otherwise \texttt{std::vector<}\emph{\texttt{ATTR}}\texttt{(p1)>} \\
 \texttt{p{[}a{]}} & None. \\
 \texttt{repeat(arg0){[}p{]}} & \texttt{std::string} if \emph{\texttt{ATTR}}\texttt{(p)} is \texttt{char} or \texttt{char32\_t}, otherwise \texttt{std::vector<}\emph{\texttt{ATTR}}\texttt{(p)>} \\
@@ -2112,12 +2112,12 @@ Expression & Attribute Type \\
 \texttt{-p >> *p} & \texttt{std::string} if \emph{\texttt{ATTR}}\texttt{(p)} is \texttt{char} or \texttt{char32\_t}, otherwise \texttt{std::vector<}\emph{\texttt{ATTR}}\texttt{(p)>} \\
 \texttt{string("str") >> -cu} & \texttt{std::string} \\
 \texttt{-cu >> string("str")} & \texttt{std::string} \\
-\texttt{!p1 \textbar{} p2{[}a{]}} & None. \\
-\texttt{p \textbar{} p} & \emph{\texttt{ATTR}}\texttt{(p)} \\
-\texttt{p1 \textbar{} p2} & \texttt{std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} \\
-\texttt{p \textbar{} }\texttt{eps} & \texttt{std::optional<}\emph{\texttt{ATTR}}\texttt{(p)>} \\
-\texttt{p1 \textbar{} p2 \textbar{} eps} & \texttt{std::optional<std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>>} \\
-\texttt{p1 \textbar{} p2{[}a{]} \textbar{} p3} & \texttt{std::optional<std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p3)>>} \\
+\texttt{!p1 | p2{[}a{]}} & None. \\
+\texttt{p | p} & \emph{\texttt{ATTR}}\texttt{(p)} \\
+\texttt{p1 | p2} & \texttt{std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>} \\
+\texttt{p | }\texttt{eps} & \texttt{std::optional<}\emph{\texttt{ATTR}}\texttt{(p)>} \\
+\texttt{p1 | p2 | eps} & \texttt{std::optional<std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p2)>>} \\
+\texttt{p1 | p2{[}a{]} | p3} & \texttt{std::optional<std::variant<}\emph{\texttt{ATTR}}\texttt{(p1), }\emph{\texttt{ATTR}}\texttt{(p3)>>} \\
 \end{longtable}
 
 \hfill\break
@@ -2539,7 +2539,7 @@ if you want to want to parse in ASCII-only mode, or in some other non-Unicode en
 \endlastfoot
 \begin{minipage}[t]{\linewidth}\raggedright
 \end{minipage} & Tip \\
-If you want to ensure all input is parsed as Unicode, pass the input range \texttt{r} as \texttt{r \textbar{} boost::parser::as\_utf32} --- that's the first thing that happens to it inside \texttt{parse()} in the Unicode parsing path anyway. & \\
+If you want to ensure all input is parsed as Unicode, pass the input range \texttt{r} as \texttt{r | boost::parser::as\_utf32} --- that's the first thing that happens to it inside \texttt{parse()} in the Unicode parsing path anyway. & \\
 \end{longtable}
 
 \begin{longtable}[]{@{}
@@ -2551,7 +2551,7 @@ If you want to ensure all input is parsed as Unicode, pass the input range \text
 \endlastfoot
 \begin{minipage}[t]{\linewidth}\raggedright
 \end{minipage} & Note \\
-Since passing \texttt{boost::parser::utfN\_view} is a special case, and since a sequence of \texttt{char}s \texttt{r} is otherwise considered an unknown encoding, \texttt{boost::parser::parse(r \textbar{} boost::parser::as\_utf8, p)} treats \texttt{r} as UTF-8, whereas \texttt{boost::parser::parse(r, p)} does not. & \\
+Since passing \texttt{boost::parser::utfN\_view} is a special case, and since a sequence of \texttt{char}s \texttt{r} is otherwise considered an unknown encoding, \texttt{boost::parser::parse(r | boost::parser::as\_utf8, p)} treats \texttt{r} as UTF-8, whereas \texttt{boost::parser::parse(r, p)} does not. & \\
 \end{longtable}
 
 \subsubsection{\texorpdfstring{The \texttt{trace\_mode} parameter to parse()}{The trace\_mode parameter to parse()}}
@@ -2926,7 +2926,7 @@ BOOST_PARSER_DEFINE_RULES(ints);
 \endlastfoot
 \begin{minipage}[t]{\linewidth}\raggedright
 \end{minipage} & Tip \\
-That's just an example. It's almost always better to do things without using semantic actions. We could have instead written \texttt{ints\_def} as \texttt{"20-zeros" >> bp::attr(std::vector<int>(20)) \textbar{} +bp::int\_}, which has the same semantics, is a lot easier to read, and is a lot less code. & \\
+That's just an example. It's almost always better to do things without using semantic actions. We could have instead written \texttt{ints\_def} as \texttt{"20-zeros" >> bp::attr(std::vector<int>(20)) | +bp::int\_}, which has the same semantics, is a lot easier to read, and is a lot less code. & \\
 \end{longtable}
 
 \subsubsection{Locals}
@@ -3165,7 +3165,7 @@ Since \texttt{boost::parser::search()} returns a subrange, whatever parser you g
 
 As you can see above, one aspect of \texttt{boost::parser::search()} differs intentionally from the conventions of the \texttt{std::ranges} algorithms --- it accepts C-style strings, treating them as if they were proper ranges.
 
-Also, \texttt{boost::parser::search()} knows how to accommodate your iterator type. You can pass the C-style string \texttt{"aaXYZq"} as in the example above, or \texttt{"aaXYZq" \textbar{} bp::as\_utf32}, or \texttt{"aaXYZq" \textbar{} bp::as\_utf8}, or even \texttt{"aaXYZq" \textbar{} bp::as\_utf16}, and it will return a subrange whose iterators are the type that you passed as input, even though internally the iterator type might be something different (a UTF-8 -> UTF-32 transcoding iterator in Unicode parsing, as with all the \texttt{\textbar{} bp::as\_utfN} examples above). As long as you pass a range to be parsed whose value type is \texttt{char}, \texttt{char8\_t}, \texttt{char32\_t}, or that is adapted using some combination of \texttt{as\_utfN} adaptors, this accommodation will operate correctly.
+Also, \texttt{boost::parser::search()} knows how to accommodate your iterator type. You can pass the C-style string \texttt{"aaXYZq"} as in the example above, or \texttt{"aaXYZq" | bp::as\_utf32}, or \texttt{"aaXYZq" | bp::as\_utf8}, or even \texttt{"aaXYZq" | bp::as\_utf16}, and it will return a subrange whose iterators are the type that you passed as input, even though internally the iterator type might be something different (a UTF-8 -> UTF-32 transcoding iterator in Unicode parsing, as with all the \texttt{| bp::as\_utfN} examples above). As long as you pass a range to be parsed whose value type is \texttt{char}, \texttt{char8\_t}, \texttt{char32\_t}, or that is adapted using some combination of \texttt{as\_utfN} adaptors, this accommodation will operate correctly.
 
 \texttt{boost::parser::search()} has multiple overloads. You can pass a range or an iterator/sentinel pair, and you can pass a skip parser or not. That's four overloads. Also, all four overloads take an optional \texttt{boost::parser::trace} parameter at the end. This is really handy for investigating why you're not finding something in the input that you expected to.
 
@@ -3260,7 +3260,7 @@ Though the ranges \texttt{r} and \texttt{replacement} can both be C-style string
 
 \texttt{ReplacementV} is constrained almost exactly the same as \texttt{V}. \texttt{V} must model \texttt{parsable\_range} and \texttt{std::ranges::viewable\_range}. \texttt{ReplacementV} is the same, except that it can also be a \texttt{std::ranges::input\_range}, whereas \texttt{V} must be a \texttt{std::ranges::forward\_range}.
 
-You may wonder what happens when you pass a UTF-N range for \texttt{r}, and a UTF-M range for \texttt{replacement}. What happens in this case is silent transcoding of \texttt{replacement} from UTF-M to UTF-N by the \texttt{boost::parser::replace} range adaptor. This doesn't require memory allocation; \texttt{boost::parser::replace} just slaps \texttt{\textbar{} boost::parser::as\_utfN} onto \texttt{replacement}. However, since Boost.Parser treats \texttt{char} ranges as unknown encoding, \texttt{boost::parser::replace} will not transcode from \texttt{char} ranges. So calls like this won't work:
+You may wonder what happens when you pass a UTF-N range for \texttt{r}, and a UTF-M range for \texttt{replacement}. What happens in this case is silent transcoding of \texttt{replacement} from UTF-M to UTF-N by the \texttt{boost::parser::replace} range adaptor. This doesn't require memory allocation; \texttt{boost::parser::replace} just slaps \texttt{| boost::parser::as\_utfN} onto \texttt{replacement}. However, since Boost.Parser treats \texttt{char} ranges as unknown encoding, \texttt{boost::parser::replace} will not transcode from \texttt{char} ranges. So calls like this won't work:
 
 \begin{code}
 char const str[] = "some text";
@@ -3334,7 +3334,7 @@ Just like \texttt{boost::parser::replace} and \texttt{boost::parser::replace\_vi
 
 \subsection{Unicode Support}
 
-Boost.Parser was designed from the start to be Unicode friendly. There are numerous references to the "Unicode code path" and the "non-Unicode code path" in the Boost.Parser documentation. Though there are in fact two code paths for Unicode and non-Unicode parsing, the code is not very different in the two code paths, as they are written generically. The only difference is that the Unicode code path parses the input as a range of code points, and the non-Unicode path does not. In effect, this means that, in the Unicode code path, when you call \texttt{parse(r, p)} for some input range \texttt{r} and some parser \texttt{p}, the parse happens as if you called \texttt{parse(r \textbar{} boost::parser::as\_utf32, p)} instead. (Of course, it does not matter if \texttt{r} is a proper range, or an iterator/sentinel pair; those both work fine with \texttt{boost::parser::as\_utf32}.)
+Boost.Parser was designed from the start to be Unicode friendly. There are numerous references to the "Unicode code path" and the "non-Unicode code path" in the Boost.Parser documentation. Though there are in fact two code paths for Unicode and non-Unicode parsing, the code is not very different in the two code paths, as they are written generically. The only difference is that the Unicode code path parses the input as a range of code points, and the non-Unicode path does not. In effect, this means that, in the Unicode code path, when you call \texttt{parse(r, p)} for some input range \texttt{r} and some parser \texttt{p}, the parse happens as if you called \texttt{parse(r | boost::parser::as\_utf32, p)} instead. (Of course, it does not matter if \texttt{r} is a proper range, or an iterator/sentinel pair; those both work fine with \texttt{boost::parser::as\_utf32}.)
 
 Matching "characters" within Boost.Parser's parsers is assumed to be a code point match. In the Unicode path there is a code point from the input that is matched to each \texttt{char\_} parser. In the non-Unicode path, the encoding is unknown, and so each element of the input is considered to be a whole "character" in the input encoding, analogous to a code point. From this point on, I will therefore refer to a single element of the input exclusively as a code point.
 
@@ -3561,7 +3561,7 @@ You can set the error handler to any of these, or one of your own, using \texttt
 
 Boost.Parser only generates error messages like the ones in this page at failed expectation points, like \texttt{a > b}, where you have successfully parsed \texttt{a}, but then cannot successfully parse \texttt{b}. This may seem limited to you. It's actually the best that we can do.
 
-In order for error handling to happen other than at expectation points, we have to know that there is no further processing that might take place. This is true because Boost.Parser has \texttt{P1 \textbar{} P2 \textbar{} ... \textbar{} Pn} parsers ("\texttt{or\_parser}s"). If any one of these parsers \texttt{Pi} fails to match, it is not allowed to fail the parse --- the next one (\texttt{Pi+1}) might match. If we get to the end of the alternatives of the or\_parser and \texttt{Pn} fails, we still cannot fail the top-level parse, because the \texttt{or\_parser} might be a subparser within a parent \texttt{or\_parser}.
+In order for error handling to happen other than at expectation points, we have to know that there is no further processing that might take place. This is true because Boost.Parser has \texttt{P1 | P2 | ... | Pn} parsers ("\texttt{or\_parser}s"). If any one of these parsers \texttt{Pi} fails to match, it is not allowed to fail the parse --- the next one (\texttt{Pi+1}) might match. If we get to the end of the alternatives of the or\_parser and \texttt{Pn} fails, we still cannot fail the top-level parse, because the \texttt{or\_parser} might be a subparser within a parent \texttt{or\_parser}.
 
 Ok, so what might we do? Perhaps we could at least indicate when we ran into end-of-input. But we cannot, for exactly the same reason already stated. For any parser \texttt{P}, reaching end-of-input is a failure for \texttt{P}, but not necessarily for the whole parse.
 
