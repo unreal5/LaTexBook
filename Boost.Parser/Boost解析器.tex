@@ -1,0 +1,165 @@
+\documentclass{MyBook}
+%\usepackage{tcolorbox}
+%%设置新字体
+%%定义带圈数字命令
+\newfontfamily{\nmfont}{circlenumber}
+[%
+Extension=.otf,
+Path=./fonts/]
+
+\newcommand{\quan}[1]{{\nmfont \symbol{#1}}}
+\newcommand{\kk}[1]{\quan{\numexpr32+#1}}%\kk{<参数范围1-95>}96、97、98、99分别用\quan{196} \quan{197} \quan{199} \quan{201}
+
+%脚注使用带圈数字
+\newcommand*\kkctr[1]{%
+  \protect\kk{\number\numexpr\value{#1}\relax}}
+\renewcommand*\thefootnote{\textcolor{black}{\kkctr{footnote}}}
+
+\makeatletter
+%%无悬挂脚注格式
+\renewcommand\@makefntext[1]{%
+  \setlength\parindent{2\ccwd}\selectfont
+  \@thefnmark\ #1}
+
+%修改\part，使其不分页
+\def\@endpart{%
+  \vskip40\p@%
+   \@afterheading}
+\makeatother
+
+\newenvironment{myenum}{\begin{enumerate}[label=\protect\kk{\arabic*}]\small}{\end{enumerate}}%
+
+
+
+\usepackage{float}
+\renewcommand{\texttt}[1]{\textcolor{blue!75!black}{\ttfamily#1}\relax}
+
+
+
+\newcommand{\cg}[2][width=.9\linewidth]{
+\begin{figure}[H]
+\centering
+\includegraphics[#1]{#2}
+\end{figure}
+}
+
+\newcommand{\cgc}[3][width=.9\linewidth]{
+\begin{figure}[H]
+\centering
+\includegraphics[#1]{#2}
+\caption{#3}
+\end{figure}
+}
+
+\usepackage{xurl}
+%设置一些字体
+\usepackage{amssymb} % Must be loaded before unicode-math
+\usepackage[force]{filehook} % Fixes an error
+\usepackage{unicode-math} % Math fonts in xetexorluatex
+	\setromanfont[ % Libertinus Serif font
+		Scale=1.04
+	]{Libertinus Serif}
+	\setsansfont[ % Libertinus Sans font
+		Scale=1
+	]{Libertinus Sans}
+	\setmathfont{Libertinus Math} % Libertinus Math font
+	
+	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%		TikZ
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{tikz}
+\usetikzlibrary{calc,fit,matrix}
+
+\pgfdeclarelayer{bg}    % declare background layer
+\pgfsetlayers{bg,main}	% set the order of the layers (main is the standard layer)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%章、节、小节
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage[explicit]{titlesec}
+%\RequirePackage{titletoc}
+\RequirePackage{varwidth}
+
+\newlength{\subtitleRubberWidth}\setlength{\subtitleRubberWidth}{2cm}
+\newlength{\subtitleDefaultPadding}\setlength{\subtitleDefaultPadding}{2mm}
+\newlength{\subtitleRubberHeight}\setlength{\subtitleRubberHeight}{4.5cm}
+
+\definecolor{mainColor}{HTML}{627ABC}
+\makeatletter
+
+
+
+\newfont{\font@chapnum}{eurb10 scaled 4000}
+
+\newsavebox{\box@chap}
+\newsavebox{\box@num}
+
+\newcommand{\draw@chapterheader}[1]{%
+	%保存两个盒子
+	%数字盒子
+	\savebox{\box@num}{
+		\begin{tikzpicture}
+		node [anchor=south,align=center,text width=0em,font=\font@chapnum]{\color{white}{\ifnum\thechapter<10 {0\thechapter}\else {\thechapter}\fi}};
+		\end{tikzpicture}
+	}
+	%标题盒子
+	\savebox{\box@chap}{
+		\begin{tikzpicture}[]
+		\node[anchor=west,inner sep=0mm,outer sep=0mm,font=\Huge\bfseries,color=black]{\begin{varwidth}{\textwidth-\wd\box@num-2cm}#1\end{varwidth}};
+		\end{tikzpicture}
+	}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{tikzpicture}[remember picture, overlay, inner sep=0mm]
+		\begin{pgfonlayer}{main}
+		\node[anchor=west,inner sep=0mm,outer sep=0mm] (my@chapname){\usebox{\box@chap}};
+		\end{pgfonlayer}
+		
+		\begin{pgfonlayer}{bg}
+	% Coordinates
+		\coordinate[xshift=-1in-\evensidemargin-\subtitleRubberWidth] (rubberNorthWest) at (current page.north east);
+		\coordinate[xshift=\subtitleRubberWidth, yshift=-\subtitleRubberHeight] (rubberSouthEast) at (rubberNorthWest);
+		\coordinate[yshift=-\subtitleRubberHeight] (rubberSouthWest) at (rubberNorthWest);
+		\coordinate[xshift=\subtitleDefaultPadding, yshift=-1in-\voffset-\topmargin-\headheight-\headsep] (rubberTextNorthWest) at (rubberNorthWest);
+	% Drawing the rubber
+		\fill[mainColor,opacity=1] (rubberNorthWest) rectangle (rubberSouthEast) -- +(-\subtitleRubberWidth/2, -8mm) -- (rubberSouthWest) -- cycle;
+		\draw[white] (rubberSouthWest)[xshift=\subtitleRubberWidth/2] node [anchor=south,,inner sep =0mm,outer sep=0mm,align=center,text width=\subtitleRubberWidth-2\subtitleDefaultPadding,font=\font@chapnum]
+		{\color{white}{\ifnum\thechapter<10 {0\thechapter}\else {\thechapter}\fi}};
+		\end{pgfonlayer}
+		\end{tikzpicture}%
+}
+
+\def\@makechapterhead#1{%
+	\thispagestyle{empty}
+    \parindent 0pt%
+    \draw@chapterheader{#1}%
+%	\vspace{1cm +\ht\box@chap}
+	\vspace{1cm +\subtitleRubberHeight}
+	\newline
+%    \draw@footer%
+}%
+
+\makeatother
+
+\setlength{\parskip}{1em}
+\usepackage[normalem]{ulem}
+\usepackage{booktabs,longtable,array}
+\begin{document}
+
+%\pagestyle{empty}
+%\begin{tikzpicture}[remember picture, overlay]
+%\node at(current page.center){\includegraphics[width=\paperwidth,height=\paperheight]{./image/cover.png}
+%};
+%\end{tikzpicture}
+
+\frontmatter
+%\pagestyle{fancy}
+
+
+
+\mainmatter
+\input{tutorial.tex}
+
+\end{document}
