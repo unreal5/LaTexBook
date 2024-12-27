@@ -213,7 +213,7 @@
         commentstyle=\color{listingcomments}\itshape,
         keywordstyle=\color{blue!75!black}\bfseries,
         numberstyle=\scriptsize\color{listingnumbers}\ttfamily,
-        stringstyle=\color{listingstrings},
+        stringstyle=\color{orange},
         identifierstyle=\color{listingidentifiers},
         backgroundcolor=\color{white},
         breakatwhitespace=false,
@@ -238,6 +238,7 @@
         tabsize=2,
         numbers=none,
         %escapeinside=``,
+        backgroundcolor=\color{gray!10},
         captionpos=b,%标题的位置
         #1
     }

@@ -27,7 +27,7 @@
 
 最后是 \emph{排列解析器}；它使用 \texttt{operator||} 创建，如 \texttt{p1 || p2 || p3}。排列解析器尝试以任意顺序将其所有子解析器匹配到输入。因此，解析器 \texttt{p1 || p2 || p3} 等价于 \texttt{(p1 >> p2 >> p3) | (p1 >> p3 >> p2) | (p2 >> p1 >> p3) | (p2 >> p3 >> p1) | (p3 >> p1 >> p2) | (p3 >> p2 >> p1)}。希望它的简洁性是不言自明的。如果所有子解析器都匹配，则匹配输入，无论它们匹配的顺序如何。
 
-Boost.Parser 的解析器每个都有一个 \emph{属性} 与之关联，或者明确没有属性。属性是解析器在匹配输入时生成的值。例如，解析器 \texttt{double\_} 在匹配输入时生成一个 \texttt{double}。 \emph{\texttt{ATTR}}\texttt{()} 是一个概念上的宏，它扩展为传递给它的解析器的属性类型；\emph{\texttt{ATTR}}\texttt{(double\_)} 是 \texttt{double}。这类似于 \texttt{attribute} 类型特征。
+Boost.Parser 的解析器每个都有一个 \emph{属性} 与之关联，或者明确没有属性。属性是解析器在匹配输入时生成的值。例如，解析器 \ci{double_} 在匹配输入时生成一个 \texttt{double}。 \emph{\texttt{ATTR}}\texttt{()} 是一个概念上的宏，它扩展为传递给它的解析器的属性类型；\emph{\texttt{ATTR}}\texttt{(double\_)} 是 \texttt{double}。这类似于 \texttt{attribute} 类型特征。
 
 接下来，我们将看一些使用 Boost.Parser 进行解析的简单程序。我们将从小处开始，然后逐步构建。
 
@@ -76,7 +76,7 @@ bp::parse(input, *bp::char_, result);
 
 让我们看一个稍微复杂一点的示例，即使它仍然很简单。我们不再接受任意的 \texttt{char}，而是要求一些结构。我们来解析一个或多个用逗号分隔的 \texttt{double}。
 
-Boost.Parser 的 \texttt{double} 解析器是 \texttt{double\_}。所以，要解析一个 \texttt{double}，我们只需使用它。如果我们想连续解析两个 \texttt{double}，我们会使用：
+Boost.Parser 的 \texttt{double} 解析器是 \ci{double_}。所以，要解析一个 \texttt{double}，我们只需使用它。如果我们想连续解析两个 \texttt{double}，我们会使用：
 
 \begin{code}
 boost::parser::double_ >> boost::parser::double_
@@ -88,7 +88,7 @@ boost::parser::double_ >> boost::parser::double_
 boost::parser::double_ >> *(',' >> boost::parser::double_)
 \end{code}
 
-这是一个匹配至少一个 \texttt{double} 的解析器——因为上面表达式中的第一个 \texttt{double\_}——后跟零个或多个逗号后跟一个 \texttt{double} 的实例。注意我们可以直接使用 \ci{','}。尽管它不是解析器，\texttt{operator>>} 和定义在 Boost.Parser 解析器上的其他操作符有接受字符/解析器对参数的重载；这些操作符重载将创建正确的解析器来识别 \ci{','}。
+这是一个匹配至少一个 \texttt{double} 的解析器——因为上面表达式中的第一个 \ci{double_}——后跟零个或多个逗号后跟一个 \texttt{double} 的实例。注意我们可以直接使用 \ci{','}。尽管它不是解析器，\texttt{operator>>} 和定义在 Boost.Parser 解析器上的其他操作符有接受字符/解析器对参数的重载；这些操作符重载将创建正确的解析器来识别 \ci{','}。
 
 \begin{code}
 #include <boost/parser/parser.hpp>
@@ -119,21 +119,14 @@ int main()
 }
 \end{code}
 
-第一个示例使用了一个输出参数来传递解析结果。这次对 \texttt{parse()} 的调用则返回一个结果。如你所见，结果可以上下文转换为 \texttt{bool}，并且 \texttt{*result} 是某种范围。实际上，这次对 \texttt{parse()} 的调用返回的类型是 \texttt{std::optional<std::vector<double>>}。自然地，如果解析失败，则返回 \texttt{std::nullopt}。稍后我们将看看 Boost.Parser 如何将解析器的类型映射到返回类型或填充的输出参数的类型。
+第一个示例使用了一个输出参数来传递解析结果。这次对 \texttt{parse()} 的调用则返回一个结果。如你所见，结果可以上下文转换为 \texttt{bool}，并且 \texttt{*result} 是某种范围。实际上，这次对 \texttt{parse()} 的调用返回的类型是 \ci{std::optional<std::vector<double>>}。自然地，如果解析失败，则返回 \texttt{std::nullopt}。稍后我们将看看 Boost.Parser 如何将解析器的类型映射到返回类型或填充的输出参数的类型。
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
-\toprule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-\begin{minipage}[t]{\linewidth}\raggedright
-\end{minipage} & Note \\
-有一个类型特征可以告诉你解析器的属性类型，即 \texttt{attribute}（以及一个相关的别名 \texttt{attribute\_t}）。我们将在属性生成部分详细讨论它。 & \\
-\end{longtable}
 
-If I run it in a shell, this is the result:
+\begin{marker}
+有一个类型特征可以告诉你解析器的属性类型，即 \texttt{attribute}（以及一个相关的别名 \texttt{attribute\_t}）。我们将在属性生成部分详细讨论它。
+\end{marker}
+
+如果我在 shell 中运行它，结果如下：
 
 \begin{code}
 $ example/trivial
@@ -148,13 +141,13 @@ Good job!  Please proceed to the recovery annex for cake.
 
 它无法识别 \texttt{"5.6, 8.9"}。这是因为它期望逗号后面 \emph{立即} 跟一个 \texttt{double}，但我在逗号后插入了一个空格。如果我在逗号前、逗号前后或 \texttt{double} 列表前后放置空格，也会发生同样的解析失败。
 
-还有一件事：有一种更好的方法来编写上面的解析器。我们可以不重复 \texttt{double\_} 子解析器，而是这样写：
+还有一件事：有一种更好的方法来编写上面的解析器：我们可以不重复 \ci{double_} 子解析器，而是这样写：
 
 \begin{code}
 bp::double_ % ','
 \end{code}
 
-这在语义上等同于 \texttt{bp::double\_ >> *(',' >> bp::double\_)}。这种模式——一些输入重复一次或多次，每个实例之间有一个分隔符——非常常见，因此有一个专门的操作符 \texttt{operator\%}。从现在开始我们将使用这个操作符。
+这在语义上等同于 \ci{bp::double_ >> *(',' >> bp::double_)}。这种模式——一些输入重复一次或多次，每个实例之间有一个分隔符——非常常见，因此有一个专门的操作符 \ci{operator\%}。从现在开始我们将使用这个操作符。
 
 \subsection{一个优雅处理空白的简单示例}
 
@@ -191,13 +184,13 @@ int main()
 
 跳过解析器，或称 \emph{skipper}，在传递给 \texttt{parse()} 的解析器中的子解析器之间运行。在这种情况下，skipper 在解析第一个 \texttt{double} 之前、在解析任何后续的逗号或 \texttt{double} 之前以及在结束时运行。因此，字符串 \texttt{"3.6,5.9"} 和 \texttt{" 3.6 , \textbackslash{}t 5.9 "} 被这个程序解析的结果是相同的。
 
-跳过是 Boost.Parser 中的一个重要概念。你可以跳过任何东西，不仅仅是空白字符；还有很多其他你可能想跳过的东西。传递给 \texttt{parse()} 的 skipper 可以是任意解析器。例如，如果你为脚本语言编写解析器，你可以编写一个 skipper 来跳过空白字符、内联注释和行尾注释。
+跳过是 Boost.Parser 中的一个重要概念。你可以跳过任何东西，不仅仅是空白字符；还有很多其他你可能想跳过的东西。传递给 \texttt{parse()} 的 \emph{skipper} 可以是任意解析器。例如，如果你为脚本语言编写解析器，你可以编写一个 skipper 来跳过空白字符、内联注释和行尾注释。
 
 在接下来的文档中，我们几乎会专门使用跳过解析器。忽略输入中你不关心的部分的能力是如此方便，以至于在实际操作中不使用跳过解析的情况很少见。
 
 \subsection{语义动作}
 
-像所有解析系统（lex \& yacc、Boost.Spirit 等）一样，Boost.Parser 有一种机制可以将语义动作与解析的不同部分关联起来。这里是与我们在前一个示例中看到的几乎相同的程序，只是它是通过一个语义动作来实现的，该动作将每个解析的 \texttt{double} 附加到结果中，而不是自动构建和返回结果。为此，我们将前一个示例中的 \texttt{double\_} 替换为 \texttt{double\_{[}action{]}}；\texttt{action} 是我们的语义动作：
+像所有解析系统（lex \& yacc、Boost.Spirit 等）一样，Boost.Parser 有一种机制可以将语义动作与解析的不同部分关联起来。这里是与我们在前一个示例中看到的几乎相同的程序，只是它是通过一个语义动作来实现的，该动作将每个解析的 \texttt{double} 附加到结果中，而不是自动构建和返回结果。为此，我们将前一个示例中的 \ci{double_} 替换为 \ci{double_[action]}；\ci{action} 是我们的语义动作：
 
 \begin{code}
 #include <boost/parser/parser.hpp>
@@ -245,15 +238,13 @@ You entered:
 3
 \end{code}
 
-在 Boost.Parser 中，语义动作是通过可调用对象实现的，这些对象接受一个解析上下文对象作为参数。解析上下文对象表示当前的解析状态。在示例中，我们使用了这个 lambda 作为我们的可调用对象：
-
+在 Boost.Parser 中，语义动作是通过\emph{可调用对象}实现的，这些对象接受一个解析上下文对象作为参数。解析上下文对象表示当前的解析状态。在示例中，我们使用了这个 lambda作为我们的可调用对象 ：
 \begin{code}
 auto const action = [&result](auto & ctx) {
     std::cout << "Got one!\n";
     result.push_back(_attr(ctx));
 };
 \end{code}
-
 我们在 lambda 中同时打印一条消息到 \texttt{std::cout} 并记录解析结果。如果你愿意，它可以做这两件事中的任意一件或都不做。我们通过向解析上下文请求解析的 \texttt{double} 来在 lambda 中获取它。 \texttt{\_attr(ctx)} 是你向解析上下文请求解析器生成的属性的方式。还有很多类似 \texttt{\_attr()} 的函数可以用来访问解析上下文中的状态。我们稍后会介绍更多这些函数。解析上下文定义了解析上下文的具体内容及其工作方式。
 
 注意，你不能直接将一个未修饰的 lambda 写为语义动作。否则，编译器会看到两个 \texttt{'{[}'} 字符并认为它即将解析一个属性。使用括号可以解决这个问题：
@@ -262,19 +253,11 @@ auto const action = [&result](auto & ctx) {
 p[([](auto & ctx){/*...*/})]
 \end{code}
 
-在你这样做之前，请注意，你编写的作为语义动作的 lambda 函数几乎总是通用的（具有 \texttt{auto \& ctx} 参数），因此非常频繁地可重用。大多数你编写的语义动作 lambda 函数应该写在行外，并给它们一个好的名字。即使它们不被重用，命名的 lambda 也能使你的解析器更小、更易读。
+在你这样做之前，请注意，你编写的作为语义动作的 lambda 函数几乎总是通用的（具有 \ci{auto& ctx} 参数），因此非常频繁地可重用。大多数你编写的语义动作 lambda 函数应该写在行外，并给它们一个好的名字。即使它们不被重用，命名的 lambda 也能使你的解析器更小、更易读。
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
-\toprule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-\begin{minipage}[t]{\linewidth}\raggedright
-\end{minipage} & Important \\
-Attaching a semantic action to a parser removes its attribute. That is, \emph{\texttt{ATTR}}\texttt{(p{[}a{]})} is always the special no-attribute type \texttt{none}, regardless of what type \emph{\texttt{ATTR}}\texttt{(p)} is. & \\
-\end{longtable}
+\begin{marker}
+将语义动作附加到解析器会移除其属性。也就是说，\emph{\texttt{ATTR}}\texttt{(p{[}a{]})} 总是特殊的无属性类型 \texttt{none}，无论 \emph{\texttt{ATTR}}\texttt{(p)} 是什么类型。
+\end{marker}
 
 \subsubsection{规则中的语义动作}
 
@@ -284,7 +267,7 @@ Attaching a semantic action to a parser removes its attribute. That is, \emph{\t
 
 到目前为止，我们已经看到了解析一些文本并生成相关属性的示例。有时，你想找到输入中包含你要查找内容的某个子范围，而不想生成属性。
 
-有两个 \emph{指令} 会影响任何解析器的属性类型，\texttt{raw{[}{]}} 和 \texttt{string\_view{[}{]}}。（我们将在后面的指令部分详细介绍指令。现在，你只需要知道指令包装一个解析器，并改变其某些功能方面。）
+有两个 \emph{指令} 会影响任何解析器的属性类型，\ci{raw[]} 和 \ci{string_view[]}。（我们将在后面的指令部分详细介绍指令。\emph{现在，你只需要知道指令包装一个解析器，并改变其某些功能方面。}）
 
 \subsubsection{raw{[}{]}}
 
@@ -344,7 +327,7 @@ assert(*sv1 == str.substr(0, 10));
 static_assert(std::is_same_v<decltype(sv1), std::optional<std::string_view>>);
 \end{code}
 
-由于 \texttt{string\_view{[}{]}} 生成 \texttt{string\_view}，它不能像上面描述的 \texttt{raw{[}{]}} 那样返回转码迭代器。如果你用 \texttt{string\_view{[}{]}} 解析一个 \texttt{CharT} 序列，你会得到一个 \texttt{std::basic\_string\_view<CharT>}。如果解析使用了 Unicode 感知路径中的转码，\texttt{string\_view{[}{]}} 将根据需要分解转码迭代器。如果你将转码视图传递给 \texttt{parse()} 或将转码迭代器传递给 \texttt{prefix\_parse()}，\texttt{string\_view{[}{]}} 仍然会透过转码迭代器并给你一个底层范围部分的 \texttt{string\_view}。
+由于 \ci{string_view[]} 生成 \ci{string_view}，它不能像上面描述的 \ci{raw[]} 那样返回转码迭代器。如果你用 \ci{string_view[]} 解析一个 \ci{CharT} 序列，你会得到一个 \ci{std::basic_string_view<CharT>}。如果解析使用了 Unicode 感知路径中的转码，\ci{string\_view[]} 将根据需要分解转码迭代器。如果你将转码视图传递给 \ci{parse()} 或将转码迭代器传递给 \ci{prefix_parse()}，\ci{string_view[]} 仍然会透过转码迭代器并给你一个底层范围部分的 \ci{string_view}。
 
 \begin{code}
 auto sv2 = bp::parse("1, 2, 3, 4" | bp::as_utf32, sv_parser, bp::ws);
@@ -362,25 +345,17 @@ static_assert(std::is_same_v<decltype(sv2), std::optional<std::string_view>>);
 
 尽管解析上下文对象似乎有东西被添加或移除，但实际上并没有一个单一的上下文对象。上下文是在解析过程中在不同时间点形成的，通常是在启动子解析器时。每个上下文都是通过获取前一个上下文并根据需要添加或更改成员来形成一个新的上下文对象。当包含新上下文对象的函数返回时，其上下文对象（如果有的话）会被析构。这种操作是高效的，因为解析上下文只有大约十二个数据成员，每个数据成员的大小都小于或等于一个指针的大小。因此，在修改上下文时复制整个上下文是快速的。解析上下文不进行内存分配。
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
-\toprule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-\begin{minipage}[t]{\linewidth}\raggedright
-\end{minipage} & Tip \\
-所有这些以解析上下文作为第一个参数的函数都可以通过参数依赖查找（Argument-Dependent Lookup）找到。你可能永远不需要用 \texttt{boost::parser::} 来限定它们。 & \\
-\end{longtable}
+\begin{marker}
+所有这些以解析上下文作为第一个参数的函数都可以通过参数依赖查找（Argument-Dependent Lookup）找到。你可能永远不需要用 \texttt{boost::parser::} 来限定它们。
+\end{marker}
 
-\subsubsection{Accessors for data that are always available}
+\subsubsection{始终可用数据的访问器}
 
-By convention, the names of all Boost.Parser functions that take a parse context, and are therefore intended for use inside semantic actions, contain a leading underscore.
+按照惯例，所有接受解析上下文的 Boost.Parser 函数的名称都包含一个前导下划线，因此这些函数旨在语义操作中使用。
 
 \subsubsection{\_pass()}
 
-\texttt{\_pass()} returns a reference to a \texttt{bool} indicating the success of failure of the current parse. This can be used to force the current parse to pass or fail:
+\ci{_pass()} 返回一个 \texttt{bool} 的引用，指示当前解析的成功或失败。这可以用来强制当前解析通过或失败：
 
 \begin{code}
 [](auto & ctx) {
@@ -398,7 +373,7 @@ By convention, the names of all Boost.Parser functions that take a parse context
 
 \subsubsection{\_error\_handler()}
 
-\texttt{\_error\_handler()} 返回一个引用，指向与传递给 \texttt{parse()} 的解析器关联的错误处理程序。使用 \texttt{\_error\_handler()}，你可以从语义动作中生成错误和警告。有关具体示例，请参见错误处理和调试。
+\ci{_error_handler()} 返回一个引用，指向与传递给 \ci{parse()} 的解析器关联的错误处理程序。使用 \ci{_error_handler()}，你可以从语义动作中生成错误和警告。有关具体示例，请参见错误处理和调试。
 
 \subsubsection{仅在某些情况下可用的数据访问器}
 
@@ -466,25 +441,17 @@ Later in the parse, you could then use \texttt{black\_list} to check values as t
 
 与 \texttt{\_locals()} 不同，你 \textbf{不} 需要为 \texttt{rule} 提供模板参数。相反，你调用 \texttt{rule} 的 \texttt{with()} 成员函数（同样，参见更多关于规则的内容）。
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
-\toprule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-\begin{minipage}[t]{\linewidth}\raggedright
-\end{minipage} & Note \\
-\texttt{none} 是一个类型，用作 Boost.Parser 中解析上下文访问器的返回值。 \texttt{none} 可以转换为任何具有默认构造函数的类型，可以从任何类型转换而来，可以从任何类型赋值，并且对所有可重载的操作符都有模板化的重载。其目的是确保误用 \texttt{\_val()}、\texttt{\_globals()} 等操作在编译时不会报错，而是在运行时产生断言。经验表明，使用调试器调查导致错误的堆栈比筛选编译器诊断信息提供了更好的用户体验。有关详细解释，请参见基本原理部分。 & \\
-\end{longtable}
+\begin{marker}
+\texttt{none} 是一个类型，用作 Boost.Parser 中解析上下文访问器的返回值。 \texttt{none} 可以转换为任何具有默认构造函数的类型，可以从任何类型转换而来，可以从任何类型赋值，并且对所有可重载的操作符都有模板化的重载。其目的是确保误用 \texttt{\_val()}、\texttt{\_globals()} 等操作在编译时不会报错，而是在运行时产生断言。经验表明，使用调试器调查导致错误的堆栈比筛选编译器诊断信息提供了更好的用户体验。有关详细解释，请参见基本原理部分。
+\end{marker}
 
-\subsubsection{\texorpdfstring{\texttt{\_no\_case()}}{\_no\_case()}}
+\subsubsection{\_no\_case()}
 
 \texttt{\_no\_case()} 返回 \texttt{true}，如果当前解析上下文在一个或多个（可能嵌套的）\texttt{no\_case{[}{]}} 指令内。我没有这个的用例，但如果我不暴露它，它将是上下文中唯一不能从语义动作内部检查的东西。添加它很容易，所以我就做了。
 
 \subsection{规则解析器}
 
-这个示例与我们迄今为止看到的其他示例非常相似。不同之处在于它使用了一个 \texttt{rule}。作为类比，可以将解析器如 \texttt{char\_} 或 \texttt{double\_} 看作单独的一行代码，而将 \texttt{rule} 看作一个函数。像函数一样，\texttt{rule} 有自己的名字，甚至可以被前向声明。以下是我们定义 \texttt{rule} 的方式，这类似于前向声明一个函数：
+这个示例与我们迄今为止看到的其他示例非常相似。不同之处在于它使用了一个 \texttt{rule}。作为类比，可以将解析器如 \texttt{char\_} 或 \ci{double_} 看作单独的一行代码，而将 \texttt{rule} 看作一个函数。像函数一样，\texttt{rule} 有自己的名字，甚至可以被前向声明。以下是我们定义 \texttt{rule} 的方式，这类似于前向声明一个函数：
 
 \begin{code}
 bp::rule<struct doubles, std::vector<double>> doubles = "doubles";
@@ -500,7 +467,7 @@ bp::rule<struct doubles, std::vector<double>> doubles = "doubles";
 \item
   这个规则对象本身叫做 \texttt{doubles}。
 \item
-  我们给 \texttt{doubles} 提供了诊断文本 \texttt{"doubles"}，以便 Boost.Parser 在调试期间生成解析器的跟踪时知道如何引用它。
+  我们给 \texttt{doubles} 提供了诊断文本 \ci{"doubles"}，以便 Boost.Parser 在调试期间生成解析器的跟踪时知道如何引用它。
 \end{itemize}
 
 好了，那么如果 \texttt{doubles} 是一个解析器，它做什么呢？我们通过定义一个现在应该看起来很熟悉的单独解析器来定义规则的行为：
@@ -628,17 +595,9 @@ int main()
 
 所有这些都是为了介绍 \texttt{rules} 的概念。你可能仍然不清楚为什么要使用 \texttt{rules}。关于 \texttt{rules} 的使用场景和详细信息，请参见后面的章节“更多关于规则”。
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
-\toprule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-\begin{minipage}[t]{\linewidth}\raggedright
-\end{minipage} & Note \\
-The existence of \texttt{rules} means that will probably never have to write a low-level parser. You can just put existing parsers together into \texttt{rules} instead. & \\
-\end{longtable}
+\begin{marker}
+\texttt{rules} 的存在意味着你可能永远不需要编写低级解析器。你可以将现有的解析器组合成 \texttt{rules} 来使用。
+\end{marker}
 
 \subsection{解析到结构体和类}
 
@@ -654,7 +613,7 @@ auto employee_parser = bp::lit("employee")
     >> '}';
 \end{code}
 
-\texttt{employee\_parser} 的属性类型是 \texttt{boost::parser::tuple<int, std::string, std::string, double>}。这很好，因为你在不需要编写任何语义动作的情况下获得了记录的所有解析数据。但不太好的是，你现在必须使用 \texttt{get()} 按索引获取所有单独的元素。将数据解析到程序将要使用的最终数据结构中会更好。这通常是一些 \texttt{struct} 或 \texttt{class}。Boost.Parser 支持解析到任意聚合 \texttt{struct}，以及可以从当前元组构造的非聚合类型。
+\texttt{employee\_parser} 的属性类型是 \ci{boost::parser::tuple<int, std::string, std::string, double>}。这很好，因为你在不需要编写任何语义动作的情况下获得了记录的所有解析数据。但不太好的是，你现在必须使用 \ci{get()} 按索引获取所有单独的元素。将数据解析到程序将要使用的最终数据结构中会更好。这通常是一些 \ci{struct} 或 \ci{class}。Boost.Parser 支持解析到任意聚合 \ci{struct}，以及可以从当前元组构造的非聚合类型。
 
 \subsubsection{作为属性的聚合类型}
 
@@ -1254,7 +1213,7 @@ No surprise that it works to use the symbol table as a parser to parse the one s
 auto const parser = (bp::char_ >> bp::int_)[add_symbol] >> symbols;
 \end{code}
 
-Here, we've attached the semantic action not to a simple parser like \texttt{double\_}, but to the sequence parser \texttt{(bp::char\_ >> bp::int\_)}. This sequence parser contains two parsers, each with its own attribute, so it produces two attributes as a tuple.
+Here, we've attached the semantic action not to a simple parser like \ci{double_}, but to the sequence parser \texttt{(bp::char\_ >> bp::int\_)}. This sequence parser contains two parsers, each with its own attribute, so it produces two attributes as a tuple.
 
 \begin{code}
 auto const add_symbol = [&symbols](auto & ctx) {
